@@ -11,10 +11,7 @@
         "dimensions": [
 	  {"name": "word2", "type": "string"},
 	  {"name": "word4", "type": "string"},
-	  {"name": "word8", "type": "string"},
-	  {"name": "int1", "type": "long"},
-	  {"name": "int3", "type": "long"},
-	  {"name": "int5", "type": "long"}
+	  {"name": "word8", "type": "string"}
         ],
         "spatialDimensions": [{
           "dimName": "coordinates",
@@ -22,8 +19,15 @@
         }]
       },
       "metricsSpec": [
+	  {"type": "longSum", "name": "int1", "fieldName": "int1"},
+	  {"type": "longSum", "name": "int3", "fieldName": "int3"},
+	  {"type": "longSum", "name": "int5", "fieldName": "int5"}
       ],
       "granularitySpec": {
+	  "type": "uniform",
+	  "segmentGranularity": "HOUR",
+	  "queryGranularity": "MINUTE",
+	  "rollup": true
       }
     },
     "ioConfig": {
@@ -33,7 +37,7 @@
         "baseDir": "/path/to/ingest_data_file/",
         "filter": "ingest.data"
       },
-      "inputFormat": { "type": "csv" , "columns" : ["ts","word2","word4","word8","int1","int3","int5","lat","lon"]}
+      "inputFormat": { "type": "csv" , "columns" : ["ts","word2","word4","word8","lat","lon","int1","int3","int5"]}
     }
   },
   "tuningConfig": {
