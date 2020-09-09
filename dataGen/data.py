@@ -32,9 +32,10 @@ def generate_word(length):
 # generate a timestamp in microseconds,
 # a "word" group with random strings, 2 letters, 4 letters, and 8 letters (to get different cardinalities overall),
 # a pseudo-random lat and lon to create a coordinate point, 
-# (those are the dimensions),
 # and 3 pseudo-random numbers of different sizes
-# (the metrics)
+# (those are the dimensions)
+# then three rows of numbers, one skewed "low", one skewed "hi", one 1/2 and 1/2,
+# and three theta sketches, one each of the 3 pseudo-random metric numbers
 
 for i in range(0,count):
     word2 = generate_word(2)
