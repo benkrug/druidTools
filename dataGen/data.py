@@ -42,6 +42,20 @@ for i in range(0,count):
     word8 = generate_word(8)
     lat = random.randint(-90,90)
     lon = random.randint(-180,180)
+    int1 = random.randint(1,10)
+    int3 = random.randint(1,1000)
+    int5 = random.randint(1,100000)
     for j in range(0,dup):
-        print '{:.0f},{},{},{},{},{},{},{},{}'.format(1000000*time.time(),word2,word4,word8,lat,lon,random.randint(1,10),random.randint(1,1000),random.randint(1,10000))
+	if i % 10 == 0:
+		skew_lo = random.randint(1,9999999)
+		skew_hi = random.randint(1,100)
+	else:
+		skew_lo = random.randint(1,100)
+		skew_hi = random.randint(1,9999999)
+	if i % 2 == 0:
+		lo_hi = random.randint(1,100)
+	else:
+		lo_hi = random.randint(1,9999999)
+
+        print '{:.0f},{},{},{},{},{},{},{},{},{},{},{}'.format(1000000*time.time(),word2,word4,word8,lat,lon,int1,int3,int5,skew_lo,skew_hi,lo_hi)
 
