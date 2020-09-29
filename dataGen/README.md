@@ -6,6 +6,8 @@ invoke with:
 
 java DataGen
 
+(The python version is the original, older version, no longer being updated.)
+
 You'll be prompted for the total number of rows to generate, and how many rows per dimension group.  (Multiple rows per dimension group are for testing rollup.)
 
 The program will output two files - ingest.data (the data) and ingest.spec (the ingestion spec).  Currently the data is output in .csv format.
