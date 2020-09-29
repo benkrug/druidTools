@@ -14,6 +14,7 @@ import java.lang.Runtime;
 
 class DataGen {
 
+  // method to get user input for number of rows to generate
   public static int getNumRows() {
     Scanner scan1 = new Scanner(System.in);
     System.out.println();
@@ -22,14 +23,16 @@ class DataGen {
     return numRows;
   }
 
+  // method to get user import for the number of rows per dimension group
   public static int getNumDups() {
     Scanner scan2 = new Scanner(System.in);
     System.out.println();
     System.out.print("Number of rows for each dimension group (for rollup testing): ");
     int numDups = scan2.nextInt();
     return numDups;
-
   } 
+
+  // method to make a fake "word" of a given Length
   public static String MakeWord(int Length) {
     String Vowels = "aeiouy";
     String Consonants = "bcdfghjklmnpqrstvwxz";
@@ -38,6 +41,7 @@ class DataGen {
     int i;
     Random random = new Random();
     for (i=0;i<Length;i++) {
+    // alternate between consonants and vowels
     if (i%2 == 0) Word += Consonants.charAt(random.nextInt(19));
       else Word += Vowels.charAt(random.nextInt(4));
       }
@@ -65,6 +69,11 @@ class DataGen {
   int skew_hi = 0;
   int lo_hi = 0;
 
+  // this "try" block writes the data file that will be ingested.
+  // it writes to the directory the program is invoked from.
+
+  System.out.println();
+  System.out.println("Writing a data file, ingest.data, to the current directory.");
   try {
     FileWriter dataFileWriter = new FileWriter("ingest.data");
 
@@ -99,7 +108,7 @@ class DataGen {
         row++;
       dataFileWriter.write(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
       dataFileWriter.write(System.lineSeparator());
-    System.out.println(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+//    System.out.println(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
           }
 
         }
@@ -110,7 +119,11 @@ class DataGen {
       e.printStackTrace();
       } 
 
-//  Path currentRelativePath = Paths.get("");
+  // this "try" block writes the spec file for ingestion.
+  // it writes to the directory the program is invoked from.
+
+  System.out.println(); 
+  System.out.println("Writing an ingestion spec file, ingest.spec, to the current directory.");
   String pwd = Paths.get("").toAbsolutePath().toString();
   String newline = System.lineSeparator();
   try {
@@ -172,10 +185,22 @@ class DataGen {
     specFileWriter.write("}"+newline);         
     specFileWriter.close();
     } catch (IOException e) {
+    System.out.println();
     System.out.println("Failed to write to file 'ingest.spec'.");
     e.printStackTrace();
     }
 
+    // This "try" block attempts to load the data file, using the ingestion file.
+    // It tries to load it to druid on localhost (eg, a quickstart), with not auth.
+
+
+    System.out.println();
+    System.out.println("Sending a POST request to load the data to druid on localhost.");
+    System.out.println("No authentication is used.  If there is no druid on localhost,");
+    System.out.println();
+    System.out.println("or you use authentication, or if there are other issues, it will likely silently fail.");
+    System.out.println("You can use the ingest.data file and ingest.spec file to load the data yourself.");
+    System.out.println("(You may want to edit the spec file first.)");
     try {
       Process submit = Runtime.getRuntime().exec("curl -X POST -H Content-Type:application/json -d @ingest.spec http://localhost:8081/druid/indexer/v1/task");
     } catch (IOException e) {
@@ -183,6 +208,8 @@ class DataGen {
     e.printStackTrace();
     }
 
+    System.out.println();
+    System.out.println("DataGen is complete.");
   }
 }
 
