@@ -11,6 +11,8 @@ import java.io.IOException;
 //import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.lang.Runtime;
+import java.util.Arrays;
+import java.text.ParseException;
 
 class DataGen {
 
@@ -32,6 +34,16 @@ class DataGen {
     return numDups;
   } 
 
+  // get datafile output format - default is csv
+  public static String getOutputFormat() {
+    Scanner scan3 = new Scanner(System.in);
+    System.out.println();
+    System.out.print("Choose datafile format - enter for csv: ");
+    String outputFormat = scan3.nextLine();
+    if (outputFormat != "csv") outputFormat = "csv";
+    return outputFormat;
+  }
+
   // method to make a fake "word" of a given Length
   public static String MakeWord(int Length) {
     String Vowels = "aeiouy";
@@ -48,13 +60,14 @@ class DataGen {
     return(Word);
   }
 
-  public static void GenerateData() {
-  }
+//  public static void GenerateData() {
+//  }
 
   public static void main(String args[]) {
 
   int numRows = getNumRows();
   int numDups = getNumDups();
+  String outputFormat = getOutputFormat();
 
   Random random = new Random();
 
@@ -106,8 +119,11 @@ class DataGen {
             lo_hi = random.nextInt(10000000);
           }
         row++;
-      dataFileWriter.write(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
-      dataFileWriter.write(System.lineSeparator());
+
+      if (outputFormat == "csv") {
+        dataFileWriter.write(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+        dataFileWriter.write(System.lineSeparator());
+      }
 //    System.out.println(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
           }
 
