@@ -107,7 +107,7 @@ class DataGen {
         startRow = row;  // save starting row number, to handle "dup" rows based on starting row in some cases
         for (int dup=0;dup<numDups;dup++) {
           Timestamp ts = new Timestamp(myDate.getTime());
-          if ((startRow%10)==0) { // skew opposite every 10 rows
+          if (((startRow/numDups)%10)==0) { // skew opposite every 10 groups of rows
             skew_lo = random.nextInt(10000000);
             skew_hi = random.nextInt(100);
             }
@@ -115,7 +115,7 @@ class DataGen {
             skew_lo = random.nextInt(100);
             skew_hi = random.nextInt(10000000);
           }
-	  if ((startRow%2)==0) {
+	  if (((startRow/numDups)%2)==0) {
             lo_hi = random.nextInt(100);
             }
           else {
@@ -124,7 +124,7 @@ class DataGen {
         row++;
 
       if (outputFormat == "csv") {
-        if ((startRow%100)==0) { // make email null every 100 rows (for all "dups" of that row, too)
+        if (((startRow/numDups)%100)==0) { // make email null every 100 rows (for all "dups" of that row, too)
           dataFileWriter.write(ts+","+word2+","+word4+",,"+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
           } else { // include email value
           dataFileWriter.write(ts+","+word2+","+word4+","+email+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
