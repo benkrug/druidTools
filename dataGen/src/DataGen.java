@@ -75,7 +75,7 @@ class DataGen {
 
   String word2 = "";
   String word4 = "";
-  String word8 = "";
+  String email = "";
   int lat = 0;
   int lon = 0;
   int skew_lo = 0;
@@ -90,10 +90,11 @@ class DataGen {
   try {
     FileWriter dataFileWriter = new FileWriter("ingest.data");
 
+      int startRow = 0;  // used to save which row entered a "dup" loop
       for (int row=0;row<numRows;) {
         word2 = MakeWord(2);
         word4 = MakeWord(4);
-        word8 = MakeWord(8);
+        email = word4+"@"+word2+".com";
         int int1 = random.nextInt(10);
         int int3 = random.nextInt(1000);
         int int5 = random.nextInt(1000000);
@@ -102,9 +103,11 @@ class DataGen {
 
         skew_lo = 0;
         skew_hi = 0;
+
+        startRow = row;  // save starting row number, to handle "dup" rows based on starting row in some cases
         for (int dup=0;dup<numDups;dup++) {
           Timestamp ts = new Timestamp(myDate.getTime());
-          if ((row%10)==0) {
+          if ((startRow%10)==0) { // skew opposite every 10 rows
             skew_lo = random.nextInt(10000000);
             skew_hi = random.nextInt(100);
             }
@@ -112,7 +115,7 @@ class DataGen {
             skew_lo = random.nextInt(100);
             skew_hi = random.nextInt(10000000);
           }
-          if ((row%2)==0) {
+	  if ((startRow%2)==0) {
             lo_hi = random.nextInt(100);
             }
           else {
@@ -121,10 +124,14 @@ class DataGen {
         row++;
 
       if (outputFormat == "csv") {
-        dataFileWriter.write(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+        if ((startRow%100)==0) { // make email null every 100 rows (for all "dups" of that row, too)
+          dataFileWriter.write(ts+","+word2+","+word4+",,"+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+          } else { // include email value
+          dataFileWriter.write(ts+","+word2+","+word4+","+email+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+          } 
         dataFileWriter.write(System.lineSeparator());
       }
-//    System.out.println(ts+","+word2+","+word4+","+word8+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+//    System.out.println(ts+","+word2+","+word4+","+email+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
           }
 
         }
@@ -157,7 +164,7 @@ class DataGen {
     specFileWriter.write("        \"dimensions\": ["+newline);         
     specFileWriter.write("	  {\"name\": \"word2\", \"type\": \"string\"},"+newline);         
     specFileWriter.write("	  {\"name\": \"word4\", \"type\": \"string\"},"+newline);         
-    specFileWriter.write("	  {\"name\": \"word8\", \"type\": \"string\"},"+newline);         
+    specFileWriter.write("	  {\"name\": \"email\", \"type\": \"string\"},"+newline);         
     specFileWriter.write("	  {\"name\": \"int1\", \"type\": \"long\"},"+newline);         
     specFileWriter.write("	  {\"name\": \"int3\", \"type\": \"long\"},"+newline);         
     specFileWriter.write("	  {\"name\": \"int5\", \"type\": \"long\"}"+newline);         
@@ -189,7 +196,7 @@ class DataGen {
     specFileWriter.write("        \"baseDir\": \""+pwd+"/\","+newline);         
     specFileWriter.write("        \"filter\": \"ingest.data\""+newline);         
     specFileWriter.write("      },"+newline);         
-    specFileWriter.write("      \"inputFormat\": { \"type\": \"csv\" , \"columns\" : [\"ts\",\"word2\",\"word4\",\"word8\",\"lat\",\"lon\",\"int1\",\"int3\",\"int5\",\"skew_lo\",\"skew_hi\",\"lo_hi\"]},"+newline);
+    specFileWriter.write("      \"inputFormat\": { \"type\": \"csv\" , \"columns\" : [\"ts\",\"word2\",\"word4\",\"email\",\"lat\",\"lon\",\"int1\",\"int3\",\"int5\",\"skew_lo\",\"skew_hi\",\"lo_hi\"]},"+newline);
     specFileWriter.write("      \"appendToExisting\": true"+newline);         
     specFileWriter.write("    }"+newline);         
     specFileWriter.write("  },"+newline);         
@@ -213,7 +220,6 @@ class DataGen {
     System.out.println();
     System.out.println("Sending a POST request to load the data to druid on localhost.");
     System.out.println("No authentication is used.  If there is no druid on localhost,");
-    System.out.println();
     System.out.println("or you use authentication, or if there are other issues, it will likely silently fail.");
     System.out.println("You can use the ingest.data file and ingest.spec file to load the data yourself.");
     System.out.println("(You may want to edit the spec file first.)");
