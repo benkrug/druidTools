@@ -95,9 +95,6 @@ class DataGen {
         word2 = MakeWord(2);
         word4 = MakeWord(4);
         email = word4+"@"+word2+".com";
-        int int1 = random.nextInt(10);
-        int int3 = random.nextInt(1000);
-        int int5 = random.nextInt(1000000);
         lat = (random.nextInt(179)-90);
         lon = (random.nextInt(359)-180);
 
@@ -107,7 +104,12 @@ class DataGen {
         startRow = row;  // save starting row number, to handle "dup" rows based on starting row in some cases
         for (int dup=0;dup<numDups;dup++) {
           Timestamp ts = new Timestamp(myDate.getTime());
+
+          int int1 = random.nextInt(10);
+          int int3 = random.nextInt(1000);
+          int int5 = random.nextInt(1000000);
           if (((startRow/numDups)%10)==0) { // skew opposite every 10 groups of rows
+
             skew_lo = random.nextInt(10000000);
             skew_hi = random.nextInt(100);
             }
@@ -125,9 +127,9 @@ class DataGen {
 
       if (outputFormat == "csv") {
         if (((startRow/numDups)%100)==0) { // make email null every 100 rows (for all "dups" of that row, too)
-          dataFileWriter.write(ts+",,"+word2+","+word4+","+word2+"^A"+word4+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+          dataFileWriter.write(ts+","+ts+",,"+word2+","+word4+","+word2+"^A"+word4+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
           } else { // include email value
-          dataFileWriter.write(ts+","+email+","+word2+","+word4+","+word2+"^A"+word4+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
+          dataFileWriter.write(ts+","+ts+","+email+","+word2+","+word4+","+word2+"^A"+word4+","+lat+","+lon+","+int1+","+int3+","+int5+","+skew_lo+","+skew_hi+","+lo_hi);
           } 
         dataFileWriter.write(System.lineSeparator());
       }
@@ -161,13 +163,11 @@ class DataGen {
     specFileWriter.write("      },"+newline);         
     specFileWriter.write("      \"dimensionsSpec\": {"+newline);         
     specFileWriter.write("        \"dimensions\": ["+newline);         
-    specFileWriter.write("	  {\"name\": \"d2_email\", \"type\": \"string\"},"+newline);         
-    specFileWriter.write("	  {\"name\": \"d3_word2\", \"type\": \"string\"},"+newline);         
-    specFileWriter.write("	  {\"name\": \"d4_word4\", \"type\": \"string\"},"+newline);         
-    specFileWriter.write("	  {\"name\": \"d5_mvd\", \"type\": \"string\"},"+newline);         
-    specFileWriter.write("	  {\"name\": \"d6_int1\", \"type\": \"long\"},"+newline);         
-    specFileWriter.write("	  {\"name\": \"d7_int3\", \"type\": \"long\"},"+newline);         
-    specFileWriter.write("	  {\"name\": \"d8_int5\", \"type\": \"long\"}"+newline);         
+    specFileWriter.write("	  {\"name\": \"d2_ts2\", \"type\": \"timestamp\"},"+newline);         
+    specFileWriter.write("	  {\"name\": \"d3_email\", \"type\": \"string\"},"+newline);         
+    specFileWriter.write("	  {\"name\": \"d4_word2\", \"type\": \"string\"},"+newline);         
+    specFileWriter.write("	  {\"name\": \"d5_word4\", \"type\": \"string\"},"+newline);         
+    specFileWriter.write("	  {\"name\": \"d6_mvd\", \"type\": \"string\"}"+newline);         
     specFileWriter.write("        ],"+newline);         
     specFileWriter.write("        \"spatialDimensions\": [{"+newline);         
     specFileWriter.write("          \"dimName\": \"d1_coordinates\","+newline);         
@@ -175,12 +175,15 @@ class DataGen {
     specFileWriter.write("        }]"+newline);         
     specFileWriter.write("      },"+newline);         
     specFileWriter.write("      \"metricsSpec\": ["+newline);         
-    specFileWriter.write("	  {\"type\": \"longSum\", \"name\": \"m1_lo_hi\", \"fieldName\": \"lo_hi\"},"+newline);         
-    specFileWriter.write("	  {\"type\": \"longSum\", \"name\": \"m2_skew_lo\", \"fieldName\": \"skew_lo\"},"+newline);         
-    specFileWriter.write("	  {\"type\": \"longSum\", \"name\": \"m3_skew_hi\", \"fieldName\": \"skew_hi\"},"+newline);         
-    specFileWriter.write("          {\"type\": \"thetaSketch\", \"name\": \"m4_int1_sketch\", \"fieldName\": \"d6_int1\"},"+newline);         
-    specFileWriter.write("          {\"type\": \"thetaSketch\", \"name\": \"m5_int3_sketch\", \"fieldName\": \"d7_int3\"},"+newline);         
-    specFileWriter.write("          {\"type\": \"thetaSketch\", \"name\": \"m6_int5_sketch\", \"fieldName\": \"d8_int5\"}"+newline);         
+    specFileWriter.write("	  {\"type\": \"longMin\", \"name\": \"m1_int1_min\", \"fieldName\": \"int1\"},"+newline);         
+    specFileWriter.write("	  {\"type\": \"longMax\", \"name\": \"m2_int3_max\", \"fieldName\": \"int3\"},"+newline);         
+    specFileWriter.write("	  {\"type\": \"longSum\", \"name\": \"m3_int5_sum\", \"fieldName\": \"int5\"},"+newline);         
+    specFileWriter.write("	  {\"type\": \"longSum\", \"name\": \"m4_lo_hi\", \"fieldName\": \"lo_hi\"},"+newline);         
+    specFileWriter.write("	  {\"type\": \"longSum\", \"name\": \"m5_skew_lo\", \"fieldName\": \"skew_lo\"},"+newline);         
+    specFileWriter.write("	  {\"type\": \"longSum\", \"name\": \"m6_skew_hi\", \"fieldName\": \"skew_hi\"},"+newline);         
+    specFileWriter.write("          {\"type\": \"thetaSketch\", \"name\": \"m7_int1_sketch\", \"fieldName\": \"int1\"},"+newline);         
+    specFileWriter.write("          {\"type\": \"thetaSketch\", \"name\": \"m8_int3_sketch\", \"fieldName\": \"int3\"},"+newline);         
+    specFileWriter.write("          {\"type\": \"quantilesDoublesSketch\", \"name\": \"m9_int5_quantile_sketch\", \"fieldName\": \"int5\"}"+newline);         
     specFileWriter.write("      ],"+newline);         
     specFileWriter.write("      \"granularitySpec\": {"+newline);         
     specFileWriter.write("	  \"type\": \"uniform\","+newline);         
@@ -200,7 +203,7 @@ class DataGen {
     specFileWriter.write("      \"inputFormat\": {"+newline);
     specFileWriter.write("         \"type\": \"csv\","+newline);
     specFileWriter.write("         \"listDelimiter\": \"^A\","+newline);
-    specFileWriter.write("         \"columns\" : [\"ts\",\"d2_email\",\"d3_word2\",\"d4_word4\",\"d5_mvd\",\"lat\",\"lon\",\"d6_int1\",\"d7_int3\",\"d8_int5\",\"skew_lo\",\"skew_hi\",\"lo_hi\"]"+newline);
+    specFileWriter.write("         \"columns\" : [\"ts\",\"d2_ts2\",\"d3_email\",\"d4_word2\",\"d5_word4\",\"d6_mvd\",\"lat\",\"lon\",\"int1\",\"int3\",\"int5\",\"skew_lo\",\"skew_hi\",\"lo_hi\"]"+newline);
     specFileWriter.write("        },"+newline);
 
     specFileWriter.write("      \"appendToExisting\": true"+newline);         
