@@ -1,5 +1,0 @@
-echo '# For loading the indexed table extension on brokers and historicals only >> /opt/imply/conf/druid/broker/runtime.properties
-echo 'druid.extensions.loadList=["druid-s3-extensions","druid-kafka-indexing-service","druid-histogram","druid-kinesis-indexing-service","clarity-emitter","indexed-table-loader","druid-basic-security","druid-datasketches","mysql-metadata-storage","druid-lookups-cached-global","simple-client-sslcontext","imply-druid-security"]' >> /opt/imply/conf/druid/broker/runtime.properties
-
-echo '# For loading the indexed table extension on brokers and historicals only >> /opt/imply/conf/druid/historical/runtime.properties
-echo 'druid.extensions.loadList=["druid-s3-extensions","druid-kafka-indexing-service","druid-histogram","druid-kinesis-indexing-service","clarity-emitter","indexed-table-loader","druid-basic-security","druid-datasketches","mysql-metadata-storage","druid-lookups-cached-global","simple-client-sslcontext","imply-druid-security"]' >> /opt/imply/conf/druid/historical/runtime.properties
